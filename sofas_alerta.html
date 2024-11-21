@@ -1,0 +1,1018 @@
+<?php
+session_start();
+
+$imagen_perfil = 'default.jpg'; // Imagen predeterminada en caso de que no haya usuario logueado
+$mostrar_mensaje = false; // Variable para controlar el mensaje emergente
+
+// Si el usuario ha iniciado sesión, obtener la imagen de perfil y el ID del usuario
+if (isset($_SESSION['username'])) {
+    $usuarios = file('usuarios.txt', FILE_IGNORE_NEW_LINES);
+
+    foreach ($usuarios as $usuario) {
+        list($id, $nombre, $apellido, $fecha_nac, $sexo, $correo, $telefono, $username_existente, $password, $imagen) = explode('|', $usuario);
+
+        if ($username_existente == $_SESSION['username']) {
+            $imagen_perfil = $imagen; // Usar la imagen del usuario logueado
+            $user_id = $id; // Obtener el ID del usuario
+            break;
+        }
+    }
+
+    // Guardar el artículo en el archivo si se envían los datos
+    if (isset($_POST['article_name']) && isset($_POST['article_price']) && isset($_POST['article_image'])) {
+        $article_name = $_POST['article_name'];
+        $article_price = $_POST['article_price'];
+        $article_image = $_POST['article_image'];
+
+        // Abrir o crear el archivo `articulos_usu.txt`
+        $file_path = "articulos_usu.txt";
+        $file = fopen($file_path, 'a'); // 'a' para añadir al archivo sin sobrescribir
+
+        // Escribir los detalles del artículo en el archivo, junto con el ID del usuario
+        fwrite($file, "ID Usuario: $user_id | Artículo: $article_name | Precio: $article_price | Imagen: $article_image\n");
+
+        // Cerrar el archivo
+        fclose($file);
+
+        echo "El artículo ha sido guardado exitosamente en articulos_usu.txt.";
+    }
+} else {
+    $mostrar_mensaje = true; // Mostrar el mensaje emergente
+}
+?>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="logo.png">
+    <title>Muebles en Venta</title>
+    <style>
+        <style>
+          body {
+            font-family: Georgia, sans-serif;
+            margin: 20px; 
+            padding: 0;
+            color:black;
+            background:#eae9e6;
+            box-shadow: 0 0 15px rgb(139, 69, 19);
+
+        }
+ .text{
+            margin: 0;
+            padding: 0;
+            font-family: Georgia, serif;
+            color: black ;
+            min-height: 100%;
+            position: relative;
+
+ font-size: 2.0em;
+    letter-spacing: 3px; /* Espaciado entre letras */
+    line-height: 1; /* Altura de línea */
+    text-align: justify; 
+
+        }
+
+ #mensaje-login {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .header {
+            background-color:#5a523a;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+        }
+
+        .header .logo {
+            height: 80px;
+        }
+
+        .header nav {
+            display: flex;
+        }
+
+        .header nav a {
+            color: #fff;
+            margin: 0 15px;
+            text-decoration: none;
+            position: relative;
+
+        }
+
+        .header nav a:hover {
+            text-decoration: underline;
+
+        }
+
+        .header nav .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .header nav .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color:#5a523a;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+         
+
+        }
+
+        .header nav .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .header nav .dropdown-content a:hover {
+            background-color: #555;
+        }
+
+        .header nav .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+      
+
+        .welcome-section {
+            background-color: #ffffff;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .welcome-section h2 {
+            color: #746844;
+            margin-bottom: 20px;
+        }
+
+        .welcome-section p {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .cta-button {
+            background-color: #746844;
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 18px;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background-color: #5a523a;
+        }
+
+        .footer {
+            background-color: #5a523a;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .contact-info {
+            font-size: 14px;
+        }
+
+        .contact-columns {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .contact-column {
+            flex: 1;
+            padding: 10px;
+        }
+
+        .contact-column ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .contact-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .contact-column ul li strong {
+            display: inline-block;
+            width: 120px;
+        }
+
+        .social-icons img {
+            width: 30px;
+            margin: 0 10px;
+        }
+
+        #logo {
+            max-width: 100px;
+            position: absolute;
+            top: 30px;
+            left: 10px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            padding: 20px;
+            justify-content: center;
+            flex: 1;
+        }
+        .article {
+            flex: 1 1 calc(33.33% - 20px);
+            background-color: #ffffff;
+            border: 1px solid transparent;
+            box-shadow: 0 0 15px rgb(139, 69, 19);
+            border-radius: 5px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .article {
+                flex-basis: calc(50% - 20px);
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .article {
+                flex-basis: calc(100% - 20px);
+            }
+        }
+
+        .article:hover {
+            transform: translate(5px, -5px);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .article img {
+            height: auto;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .article-content {
+            padding: 15px;
+        }
+        .article-title {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .article-description {
+            font-size: 18px;
+            color: #666666;
+        }
+        .article-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #5D3215;
+            margin-top: 10px;
+        }
+
+        footer {
+            background-color: #5a523a;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+        }
+
+        .product {
+            text-align: center;
+            margin-bottom: 20px;
+            width: calc(33.33% - 20px);
+        }
+
+        .cart {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background-color: #f4f4f4;
+            padding: 20px;
+            width: 300px;
+            height: 100%;
+            overflow-y: scroll;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .cart.show {
+            transform: translateX(0);
+        }
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: red;
+            color: #fff;
+            border-radius: 50%;
+            padding: 5px 8px;
+            font-size: 14px;
+        }
+
+        .btn-remove {
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .close-cart {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .enlace-imagen {
+            padding: 5px;
+            position: absolute;
+            top: 0px;
+            left: 1350px;
+        }
+
+        .enlace-imagen img {
+            width: 40px;
+            height: auto;
+            position: absolute;
+            top: 55px;
+            left: calc(100% - 70px);
+        }
+
+        #sidebar {
+            position: fixed;
+            top: 0;
+            right: -250px;
+            width: 250px;
+            height: 100%;
+            background: #333;
+            transition: all 0.3s ease;
+        }
+        #sidebar.active {
+            right: 0;
+        }
+        #content {
+            transition: margin-right 0.3s ease;
+            padding: 20px;
+        }
+        #sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #sidebar ul li a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px;
+        }
+        #sidebar ul li a:hover {
+            background-color: #555;
+        }
+        .open-btn {
+            position: fixed;
+            right: 120px;
+            top: 10px;
+            
+            padding: 10px;
+            color: black;
+            cursor: pointer;
+            position: absolute;
+            top: 70px;
+            left: calc(100% - 95px);
+        }
+        .open-btn:hover {
+            background: #555;
+        }
+        .close-btn {
+            float: right;
+        }
+
+
+        .contact-info {
+            font-size: 14px;
+        }
+
+        .contact-info p {
+            margin-bottom: 5px;
+        }   
+button {
+            background: #733D18;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top:10px;
+        }
+        button:hover {
+            background: #fff;
+            color: #733D18;
+            box-shadow: 0 0 15px rgb(139, 69, 19);
+        }
+       a{
+       text-decoration: none;
+       color: black;
+       }
+
+
+
+
+        .barra a {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .profile-btn {
+    width: 100%; /* El contenedor de la imagen ocupa el 100% del ancho disponible */
+    max-width: 200px; /* Puedes ajustar este tamaño según lo que prefieras */
+    margin: 0 auto; /* Centrar el contenedor en la pantalla */
+    position: relative; /* Para manejar el menú desplegable */
+    margin-right: 10px;
+
+}
+
+/* Estilo de la imagen de perfil */
+.profile-btn img {
+    background-color: white;
+    cursor: pointer;
+    border: 3px solid #000000;
+    transition: border-color 0.3s ease;
+     justify-content: center;
+     width: 49px;
+    height: 49px;
+    border-radius: 50%;
+    object-fit: contain;
+    margin-top: 10px; /* Mueve la imagen 10px hacia arriba */
+            margin-left: 10px; /* Mueve la imagen 10px hacia la izquierda */
+
+}
+
+/* Menú desplegable debajo de la imagen de perfil */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 99%;
+    right: 0;
+    background-color: white;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    min-width: 150px;
+    padding: 10px;
+    z-index: 1;
+    border: 2px solid #755405;
+
+}
+
+.dropdown-menu a {
+    
+   
+    padding: 10px 20px;
+     border-radius: 50px;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid #eee;
+           display: inline-block;
+            margin: 6px;
+           
+            background-color: #8B4513; /* Color café */
+            color: white;
+            border: none;
+           
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Efecto de movimiento */
+            cursor: pointer;
+            box-shadow: 0px 0px 10px rgba(139, 69, 19, 0.5);
+}
+
+.dropdown-menu a:hover {
+    background-color: #A0522D; /* Color café más oscuro al hacer hover */
+            transform: translateY(-5px);
+
+}
+.dropdown-menu a:hover {
+background-color: #A0522D; /* Color café más oscuro al hacer hover */
+            transform: translateY(-5px);
+}
+/* Mostrar el menú desplegable cuando esté activo */
+.show {
+    display: block;
+}
+
+/* Estilos para los botones en el menú */
+.dropdown-menu a i {
+    margin-right: 10px;
+}
+.profile-btn {
+    text-align: center;        
+}
+
+.bajo a{
+ top:20px;
+ font-size: 25px;
+}
+
+.cart-icon {
+    margin-left: 20px; /* Separa el carrito de la imagen de perfil */
+    display: inline-block;
+    vertical-align: middle; /* Alinea con la imagen de perfil */
+}
+
+.cart-icon img {
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+}
+
+.cart-count {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: red;
+    color: #fff;
+    border-radius: 50%;
+    padding: 5px 8px;
+    font-size: 14px;
+}
+
+/* Estilo del carrito */
+.cart {
+    position: fixed;
+    top: 0;
+    right: -300px; /* Mantén el carrito oculto al inicio */
+    background-color: #f4f4f4;
+    padding: 20px;
+    width: 300px;
+    height: auto;
+    max-height: 100%; /* Limita la altura máxima al 100% de la pantalla */
+    overflow-y: auto;
+    transition: transform 0.3s ease-in-out, max-height 0.3s ease-in-out;
+}
+
+.cart.show {
+    transform: translateX(-100%); /* Muestra el carrito */
+}
+
+.cart ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.cart li {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.cart-item img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.btn-remove {
+    background-color: #ff0000;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #5a523a;
+    color: #fff;
+    padding: 10px 20px;
+}
+
+.profile-btn {
+    position: relative;
+    display: inline-block;
+}
+
+.popup-message {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4caf50;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+}
+
+</style>
+</head>
+<body>
+    <header class="header">
+        <img class="logo" src="logo3.png" alt="Logo de la Tienda"  onclick="window.location.href='Tienda de Mueble.html'">
+<?php if ($mostrar_mensaje): ?>
+        <div id="mensaje-login">Inicia sesión para añadir artículos al carrito.</div>
+    <?php endif; ?>
+
+<div class="text"> 
+<a href="Tienda de Mueble.html"><p class="georgia">Vieux Bois</p></a>      
+</div>
+<nav>
+            <div class="dropdown">
+                 <div class="bajo">
+                <a href="#salas">Salas</a>
+                </div>
+                <div class="dropdown-content">
+                    <a href="sofas.html">Sofás</a>
+                    <a href="sillones.html">Sillones</a>
+                    <a href="mesasc.html">Mesas de Centro</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                 <div class="bajo">
+                <a href="#comedores">Comedores</a>
+                </div>
+                <div class="dropdown-content">
+                    <a href="mesas.html">Mesas</a>
+                    <a href="sillas.html">Sillas</a>
+                    <a href="bufferts.html">Buffets</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                 <div class="bajo">
+                <a href="#recamaras">Recámaras</a>
+                </div>
+                <div class="dropdown-content">
+                    <a href="camas.html">Camas</a>
+                    <a href="buros.html">Burós</a>
+                    <a href="armarios.html">Armarios</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                 <div class="bajo">
+                <a href="#cocinas">Cocinas</a>
+                </div>
+                <div class="dropdown-content">
+                    <a href="mueblesc.html">Muebles de Cocina</a>
+                    <a href="mcocina.html">Mesas de Cocina</a>
+                    <a href="sillasc.html">Sillas de Cocina</a>
+                </div>
+            </div>
+             <div class="dropdown">
+                 <div class="bajo">
+                <a href="#juveniles">Juveniles</a>
+                </div>
+                <div class="dropdown-content">
+                    <a href="jcamas.html">Camas</a>
+                    <a href="jescritorio.html">Escritorios</a>
+                    <a href="jsillas.html">Sillas</a>
+                </div>
+            </div>
+            <div class="profile-btn">
+            <div class="cart-icon" id="cart-icon">
+            <img src="carrito2.png" alt=" Compras" id="cart-toggle-btn">
+            <span class="cart-count" id="cart-count">0</span>
+        </div>
+         </div>
+             <div class="profile-btn">
+           <img src="imagenes/<?php echo htmlspecialchars($imagen_perfil); ?>" alt="Imagen de perfil" id="profile-img">
+            <div class="dropdown-menu" id="dropdown-menu">
+    <?php if (isset($_SESSION['username'])): ?>
+        <!-- Si el usuario ha iniciado sesión, mostrar "Perfil" -->
+        <a href="datos_usuario.php"><i class="fas fa-user"></i> Perfil</a>
+        <a href="cerrar_sesion.php" style="margin-top: 5px;"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+    <?php else: ?>
+        <!-- Si el usuario no ha iniciado sesión, mostrar "Iniciar sesión" -->
+        <a href="login.php"><i class="fas fa-sign-in-alt"></i> Iniciar sesión</a>
+        <a href="register.php" style="margin-top: 5px;"><i class="fas fa-user-plus"></i> Registrarse</a>
+    <?php endif; ?>
+</div>        </div>
+
+
+    <script>        
+        document.getElementById('profile-img').addEventListener('click', function() {
+            const menu = document.getElementById('dropdown-menu');
+            menu.classList.toggle('show');
+        });
+
+        window.onclick = function(event) {
+            if (!event.target.matches('#profile-img')) {
+                var dropdowns = document.getElementsByClassName("dropdown-menu");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script> 
+          
+        </nav>
+    </header>
+
+
+
+
+    <div class="container" id="products-container">
+        <div class="product">  
+            <div class="article"> 
+                <div class="article-content">
+                    <img src="sofa1.jpg" alt="Producto 1" width="80%" onclick="window.location.href='sofas1.html'">
+                    <div class="article-title">Seccional Decohome Alba</div>
+                    <div class="article-description">Este seccional ha sido fabricado siguiendo rigurosos estándares de la mejor calidad, los cuales te brindarán un amplio confort durante su uso.</div>
+                    <div class="article-price">Precio: $150.00</div>
+
+                    <button class="add-to-cart-btn" data-name="Seccional Decohome Alba" data-price="150" data-image="sofa1.jpg" onclick="addToCart('Seccional Decohome Alba', '150', 'sofa1.jpg')">Añadir al Carrito</button>
+
+                </div>
+            </div>
+        </div>
+
+<div class="product">
+        <div class="article" >
+            <div class="article-content">
+                <img src="sofa2.jpg" alt="Producto 2" width="80%" onclick="window.location.href='sofas2.html'">
+                <div class="article-title">Poltrona Fossvelen Tela Gris</div>
+                <div class="article-description">Poltrona Fossvelen de un estilo industrial. Tapizado en una tela color gris con un diseño de espiga, su estructura metálica es color negro mate.</div>
+                 <div class="article-price">Precio: $250.00</div>
+                <button class="add-to-cart-btn" data-name="Poltrona Fossvelen Tela Gris" data-price="250" data-image="sofa2.jpg">Añadir al Carrito</button>
+            </div>
+        </div></div>
+
+<div class="product">
+        <div class="article">
+            <div class="article-content">
+                <img src="sofa3.jpg" alt="Producto 3" width="80%" onclick="window.location.href='sofas3.html'">
+                <div class="article-title">Sofa Rosen Kingsgate</div>
+                <div class="article-description">Diseño estilo clásico, que se realza por el tradicional brazo Roller, Respaldo alto potencial confortabilidad ya que otorga una sujeción óptima. Patas de madera abedul</div>
+                 <div class="article-price">Precio: $350.00</div>
+                <button class="add-to-cart-btn" data-name="Sofa Rosen Kingsgate" data-price="350" data-image="sofa3.jpg">Añadir al Carrito</button>
+            </div>
+        </div></div>
+
+<div class="product">
+        <div class="article">
+            <div class="article-content">
+                <img src="sofa4.jpg" alt="Producto 4" width="80%" onclick="window.location.href='sofas4.html'">
+                <div class="article-title">Juego De Sala, Sofá Hogar Color Marfil</div>
+                <div class="article-description">Mueble de sala Francy 2024 tapizado en tela terciopelo, de fácil limpieza y tacto suave. Construido con estructura de madera nacional y patas de metal cromado, ofrece durabilidad y estabilidad.</div>
+                 <div class="article-price">Precio: $550.00</div>
+                <button class="add-to-cart-btn" data-name="Juego De Sala, Sofá Hogar Color Marfil" data-price="550" data-image="sofa4.jpg">Añadir al Carrito</button>
+            </div>
+        </div></div>
+
+
+    </div>
+
+<div class="cart" id="cart">
+    <span class="close-cart">&times;</span>
+    <h2>Carrito de Compras</h2>
+    <ul id="cart-items">
+        <!-- Los productos seleccionados se listarán aquí -->
+    </ul>
+    <p id="total-price">Total: $0</p>
+
+    <button onclick="clearCart()" style="margin-top: 10px; background-color: #ff0000; color: white; border: none; padding: 10px; cursor: pointer;">Vaciar Carrito</button>
+</div>
+
+
+
+
+
+<script>
+// Script JavaScript
+document.addEventListener("DOMContentLoaded", function() {
+    const cartIcon = document.getElementById('cart-icon');
+    const cart = document.getElementById('cart');
+    const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
+    const cartItems = document.getElementById('cart-items');
+    const totalPrice = document.getElementById('total-price');
+    const closeCartBtn = document.querySelector('.close-cart');
+    const popupMessage = document.getElementById('popup-message'); // Para mensaje emergente
+
+    let cartCount = 0;
+    let total = 0;
+
+    // Cargar carrito desde localStorage al iniciar
+    loadCartFromLocalStorage();
+
+    // Mostrar/ocultar carrito cuando se hace clic en la imagen del carrito
+    cartIcon.addEventListener('click', function() {
+        cart.classList.toggle('show');
+    });
+
+    // Cerrar carrito al hacer clic en la flecha
+    closeCartBtn.addEventListener('click', function() {
+        cart.classList.remove('show');
+    });
+
+    // Añadir producto al carrito
+    addToCartBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const name = btn.getAttribute('data-name');
+            const price = parseFloat(btn.getAttribute('data-price'));
+            const image = btn.getAttribute('data-image');
+            cartCount++;
+            total += price;
+            updateCart(name, price, image);
+
+            // Mostrar mensaje emergente
+            showPopupMessage("Artículo añadido al carrito");
+        });
+    });
+
+    // Eliminar producto del carrito
+    cartItems.addEventListener('click', function(event) {
+        if (event.target.classList.contains('btn-remove')) {
+            const item = event.target.parentElement;
+            const price = parseFloat(item.getAttribute('data-price'));
+            total -= price;
+            item.remove();
+            cartCount--;
+            totalPrice.textContent = `Total: $${total.toFixed(2)}`;
+            updateCartIconCount();
+            saveCartToLocalStorage(); // Guardar cambios en localStorage
+        }
+    });
+
+    // Actualizar carrito
+    function updateCart(name, price, image) {
+        cartItems.innerHTML += `
+            <li class="cart-item" data-price="${price}">
+                <img src="${image}" alt="${name}">
+                ${name} - $${price.toFixed(2)}
+                <button class="btn-remove" onclick="removeItem(this, ${price})">Eliminar</button>
+            </li>
+        `;
+        totalPrice.textContent = `Total: $${total.toFixed(2)}`;
+        document.getElementById('cart-count').textContent = cartCount;
+        saveCartToLocalStorage(); // Guardar en localStorage después de actualizar
+    }
+
+    // Función para eliminar artículo y actualizar localStorage
+    function removeItem(element, price) {
+        element.parentElement.remove(); // Eliminar elemento del DOM
+        total -= price;
+        cartCount--;
+
+        // Actualizar la interfaz
+        totalPrice.textContent = `Total: $${total.toFixed(2)}`;
+        document.getElementById('cart-count').textContent = cartCount;
+
+        // Guardar el estado actualizado en localStorage
+        saveCartToLocalStorage();
+    }
+
+    // Guardar el carrito en localStorage
+    function saveCartToLocalStorage() {
+        localStorage.setItem('cartItems', cartItems.innerHTML);
+        localStorage.setItem('totalPrice', total);
+        localStorage.setItem('cartCount', cartCount);
+    }
+
+    // Cargar el carrito desde localStorage
+    function loadCartFromLocalStorage() {
+        const savedCartItems = localStorage.getItem('cartItems');
+        const savedTotal = localStorage.getItem('totalPrice');
+        const savedCartCount = localStorage.getItem('cartCount');
+
+        if (savedCartItems) {
+            cartItems.innerHTML = savedCartItems;
+            total = parseFloat(savedTotal) || 0;
+            cartCount = parseInt(savedCartCount) || 0;
+            totalPrice.textContent = `Total: $${total.toFixed(2)}`;
+            document.getElementById('cart-count').textContent = cartCount;
+        }
+    }
+
+    // Mostrar mensaje emergente temporal
+    function showPopupMessage(message) {
+        popupMessage.textContent = message;
+        popupMessage.style.display = 'block';
+        
+        // Ocultar después de 3 segundos
+        setTimeout(() => {
+            popupMessage.style.display = 'none';
+        }, 3000);
+    }
+});
+
+</script>
+
+
+
+
+
+ <footer>
+  <div class="contact-info"> 
+       <p>&copy; 2024 Vieux bois."Diseñamos muebles que cuentan historias, tu hogar merece la mejor narrativa."</p>
+  </div>    
+</footer>
+<!-- Botón de la barra lateral -->
+
+
+
+
+
+
+    <!-- Script para la función toggleSidebar() -->
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle('active');
+        }
+    </script>
+
+
+    <script>
+function addToCart(name, price, image) {
+    const formData = new FormData();
+    formData.append('article_name', name);
+    formData.append('article_price', price);
+    formData.append('article_image', image);
+
+    fetch('', { // Cambia 'ruta_al_php.php' por la ruta real del archivo PHP
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+        showPopupMessage("Artículo añadido al carrito"); // Muestra el mensaje emergente
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+
+    </script>
+
+
+<div id="popup-message" class="popup-message">Artículo añadido al carrito</div>
+
+    <script>
+        
+
+
+        function clearCart() {
+    // Vaciar el contenido del carrito
+    document.getElementById('cart-items').innerHTML = '';
+    total = 0;
+    cartCount = 0;
+
+    // Actualizar la interfaz
+    document.getElementById('total-price').textContent = `Total: $${total.toFixed(2)}`;
+    document.getElementById('cart-count').textContent = cartCount;
+
+    // Limpiar el carrito en localStorage
+    localStorage.removeItem('cartItems');
+    localStorage.removeItem('totalPrice');
+    localStorage.removeItem('cartCount');
+
+    // Mostrar mensaje de carrito vacío
+    showPopupMessage("Carrito vaciado");
+}
+    </script>
+
+<script>
+        // Mostrar el mensaje si existe
+        const mensajeLogin = document.getElementById("mensaje-login");
+        if (mensajeLogin) {
+            mensajeLogin.style.display = "block";
+
+            // Ocultar después de 5 segundos
+            setTimeout(() => {
+                mensajeLogin.style.display = "none";
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

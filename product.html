@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venta de Muebles</title>
+    <style>
+        /* Estilos básicos */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .contenedor-principal {
+            width: 90%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #d8c3a5;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .titulo-pagina {
+            text-align: center;
+            color: #8c5a3c;
+        }
+
+        .producto {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background-color: #f5f5dc;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .imagen-producto {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .informacion-producto {
+            flex: 1;
+            margin-left: 20px;
+            font-size: 25px;
+        }
+
+        .informacion-producto h2 {
+            margin-top: 0;
+            color: #8c5a3c;
+        }
+
+        .informacion-producto p, .informacion-producto ul {
+            margin: 30px 0px;
+            color: #5a3e30;
+        }
+
+        .informacion-producto .precio {
+            color: #e74c3c;
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+
+        .botones-accion {
+            margin-top: 20px;
+        }
+
+        .botones-accion button {
+            background-color: #8c5a3c;
+            color: #fff;
+            border: none;
+            padding: 16px 30px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .botones-accion button:hover {
+            background-color: #6f432a;
+        }
+
+        .informacion-pago {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        /* Media Queries para móviles */
+        @media (max-width: 768px) {
+            .contenedor-principal {
+                width: 95%;
+                padding: 15px;
+            }
+
+            .producto {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .imagen-producto {
+                width: 100%;
+                max-width: 300px;
+                margin-bottom: 15px;
+            }
+
+            .informacion-producto {
+                margin-left: 0;
+            }
+
+            .botones-accion button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .informacion-producto p, .informacion-producto ul {
+            margin: 10px 0px;
+            color: #5a3e30;
+            font-size: 25px;
+            }
+
+
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <img class="logo" src="logo3.png" alt="Logo de la Tienda" onclick="window.location.href='Tienda de Mueble.html'">
+        <div class="text">
+            <p class="georgia">Vieux Bois</p>
+        </div>
+        <nav>
+            <div class="dropdown">
+                <a href="#salas">Salas</a>
+                <div class="dropdown-content">
+                    <a href="sofas.html">Sofás</a>
+                    <a href="sillones.html">Sillones</a>
+                    <a href="mesasc.html">Mesas de Centro</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#comedores">Comedores</a>
+                <div class="dropdown-content">
+                    <a href="mesas.html">Mesas</a>
+                    <a href="sillas.html">Sillas</a>
+                    <a href="bufferts.html">Buffets</a>
+                </div>
+            </div>
+            <!-- Rest of the header stays the same -->
+        </nav>
+    </header>
+    <div class="contenedor-principal">
+        <h1 class="titulo-pagina">Venta de Muebles</h1>
+        <div class="producto">
+            <img class="imagen-producto" src="sofa1.jpg" alt="Sofá Modelo Orion">
+            <div class="informacion-producto">
+                <h2>Sofá Modelo Orion</h2>
+                <p><strong>Precio:</strong> $7,450.00</p>
+                <p><strong>Descripción:</strong> Elegante sofá con diseño moderno, fabricado en cuero sintético de alta calidad. Cojines incluidos.</p>
+                <p><strong>Medidas:</strong></p>
+                <ul>
+                    <li><strong>LOVE SEAT:</strong> Largo 1.65m, Alto 85cm, Ancho 90cm</li>
+                    <li><strong>TABURETE:</strong> Largo 60cm, Alto 50cm, Ancho 60cm</li>
+                </ul>
+                <p><strong>Especificaciones Técnicas:</strong> Estructura de metal reforzado, tapizado en cuero sintético 100% poliuretano.</p>
+                <div class="botones-accion">
+                    <button>Agregar al Carrito</button>
+                    <button>Comprar Ahora</button>
+                </div>
+            </div>
+        </div>
+        <div class="informacion-pago">
+            <h2>Formas de Pago y Envío</h2>
+            <p>Descuento adicional del 6% con el código promocional: L6VDG811 (Válido del 15 al 22 de Mayo de 2024).</p>
+            <p>Tu información siempre segura y protegida.</p>
+            <p>Envío inmediato bajo programación, contamos con stock en todos nuestros productos.</p>
+            <p>Aceptamos tarjetas de crédito y débito.</p>
+            <p>El color del producto puede variar de la imagen por cuestiones de pantalla, brillo y luz.</p>
+        </div>
+    </div>
+</body>
+</html>
